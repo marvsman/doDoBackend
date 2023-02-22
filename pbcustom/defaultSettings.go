@@ -25,7 +25,7 @@ func AddNewSettingsHandler(app *pocketbase.PocketBase, log *logrus.Logger) {
 		log.Printf("found %v entries in database", countEntries)
 		if countEntries == 0 {
 			log.Println("no entries found")
-			collection, err := app.Dao().FindCollectionByNameOrId("userSettings")
+			collection, err := app.Dao().FindCollectionByNameOrId("user_settings")
 			if err != nil {
 				return err
 			}
