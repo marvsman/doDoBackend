@@ -8,5 +8,5 @@ import (
 
 func SetupLogging(logger *logrus.Logger) {
 	logger.SetOutput(os.Stdout)
-	logger.SetLevel(logrus.DebugLevel)
+	logger.SetLevel(logrus.WarnLevel)
 }

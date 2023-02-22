@@ -11,7 +11,7 @@ import (
 // AddNewSettingsHandler add a handler to create new default userSettings whenever a user registers
 func AddNewSettingsHandler(app *pocketbase.PocketBase, log *logrus.Logger) {
 	app.OnMailerBeforeRecordVerificationSend().Add(func(e *core.MailerRecordEvent) error {
-		log.Println("OnMailerBeforeRecordVerificationSend triggered")
+		log.WithField("eventHook", "onMailerBeforeRecordVerificationSend")
 		var countEntries int
 		err := app.Dao().DB().
 			Select("count(*)").
@@ -22,9 +22,8 @@ func AddNewSettingsHandler(app *pocketbase.PocketBase, log *logrus.Logger) {
 			return err
 		}
 
-		log.Printf("found %v entries in database", countEntries)
 		if countEntries == 0 {
-			log.Println("no entries found")
+			log.Debugln("no user_settings entry found")
 			collection, err := app.Dao().FindCollectionByNameOrId("user_settings")
 			if err != nil {
 				return err
@@ -35,14 +34,13 @@ func AddNewSettingsHandler(app *pocketbase.PocketBase, log *logrus.Logger) {
 			record.Set("user_id", e.Record.Id)
 			record.Set("clearDoneEntries", false)
 			record.Set("bookmarkOrDue", false)
-			log.Println("record created")
 
 			// save to database
 			err = app.Dao().SaveRecord(record)
 			if err != nil {
 				return err
 			}
-			log.Println("record saved")
+			log.Debugln("user_settings entry saved")
 		}
 
 		return nil
