@@ -1,6 +1,8 @@
 FROM golang:alpine as builder
 
+COPY . /app
 WORKDIR /app
+RUN ls -la .
 
 RUN apk add build-base
 
@@ -10,10 +12,9 @@ ENV PB_ADMIN_USER=$PB_ADMIN_USER
 ARG PB_ADMIN_PASSWORD
 ENV PB_ADMIN_PASSWORD=$PB_ADMIN_PASSWORD
 
-COPY . .
 RUN go mod download
 
-RUN CGO_ENABLED=0 GOOS="linux" GOARCH="amd64" go build -o /pocketbase
+RUN CGO_ENABLED=0 GOOS="linux" GOARCH="amd64" go build -o pocketbase ./main.go
 
 ## Deploy
 FROM alpine:latest
