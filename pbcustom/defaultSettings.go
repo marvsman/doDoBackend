@@ -1,4 +1,4 @@
-package main
+package pbcustom
 
 import (
 	"github.com/pocketbase/dbx"

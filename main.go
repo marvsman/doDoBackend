@@ -2,6 +2,7 @@ package main
 
 import (
 	"marvsman/dodobackend/logging"
+	"marvsman/dodobackend/pbcustom"
 
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
@@ -19,7 +20,7 @@ func run() {
 	app := initPocketbase()
 
 	// add a handler to create new default userSettings whenever a user registers
-	CreateNewSettingsHandler(app)
+	pbcustom.CreateNewSettingsHandler(app)
 
 	// start pocketbase
 	if err := app.Start(); err != nil {
