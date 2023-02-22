@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  dodotodo-pb:
+    container_name: dodotodo-pb-container
+    image: registry.marvsman.com/dodotodo-pb:latest
+    restart: on-failure
+    ports:
+      - "127.0.0.1:6080:8090"
+    volumes:
+      - ./pb_data:/pb_data
+      - ./pb_migrations:/pb_migrations
+    labels:
+      - "com.centurylinklabs.watchtower.scope=backend"
+
+  watchtower:
+    container_name: watchtower-pb
+    image: containrrr/watchtower
+    restart: unless-stopped
+    depends_on:
+      - dodotodo-pb
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./watchtower/config.json:/config.json
+    ports:
+      - "127.0.0.1:5300:8080"
+    environment:
+      TZ: Europe/Berlin
+      WATCHTOWER_LIFECYCLE_HOOKS: true
+      WATCHTOWER_NOTIFICATIONS: shoutrrr
+      WATCHTOWER_DEBUG: true
+      WATCHTOWER_CLEANUP: true
+      WATCHTOWER_NOTIFICATION_TITLE_TAG: "watchtower backend"
+      WATCHTOWER_NOTIFICATION_URL: "telegram://$TELEGRAM_TOKEN@telegram/?channels=$TELEGRAM_CHAT_ID"
+    command: --interval 30 --scope backend dodotodo-pb-container
+    labels:
+      - "com.centurylinklabs.watchtower.scope=backend"
