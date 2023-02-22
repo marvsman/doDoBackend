@@ -2,7 +2,10 @@ module marvsman/dodobackend
 
 go 1.19
 
-require github.com/pocketbase/pocketbase v0.11.2
+require (
+	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
+	github.com/pocketbase/pocketbase v0.11.2
+)
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6 // indirect
