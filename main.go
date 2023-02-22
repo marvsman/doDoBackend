@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	tg "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -27,7 +28,7 @@ func main() {
 
 	// check after a record updated
 	app.OnRecordAfterUpdateRequest().Add(func(e *core.RecordUpdateEvent) error {
-		msg := tg.NewMessage(TELEGRAM_CHAT_ID, "OnRecordAfterUpdateRequest")
+		msg := tg.NewMessage(TELEGRAM_CHAT_ID, fmt.Sprintf("Updated record: %v", e.Record.Id))
 		_, err = bot.Send(msg)
 		if err != nil {
 			log.Error(err)
@@ -40,33 +41,9 @@ func main() {
 
 	// check before the mail was sent
 	app.OnMailerBeforeRecordVerificationSend().Add(func(e *core.MailerRecordEvent) error {
-		msg := tg.NewMessage(TELEGRAM_CHAT_ID, "BEFORE SEND")
-		_, err = bot.Send(msg)
-		if err != nil {
-			log.Error(err)
-		}
+		_ = sendMsg(bot, "Before send")
 		log.Println("BEFORE SEND")
-		log.Println(e)
 
-		return nil
-	})
-
-	// check after the mail was sent
-	app.OnMailerAfterRecordVerificationSend().Add(func(e *core.MailerRecordEvent) error {
-		msg := tg.NewMessage(TELEGRAM_CHAT_ID, "AFTER SEND")
-		_, err = bot.Send(msg)
-		if err != nil {
-			log.Error(err)
-		}
-
-		log.Println("AFTER SEND")
-		log.Println(e)
-
-		return nil
-	})
-
-	// create default userSettings entry for new users
-	app.OnRecordBeforeConfirmVerificationRequest().Add(func(e *core.RecordConfirmVerificationEvent) error {
 		var countEntries int
 		err := app.Dao().DB().
 			Select("count(*)").
@@ -77,24 +54,33 @@ func main() {
 			return err
 		}
 
+		_ = sendMsg(bot, fmt.Sprintf("Found %v entries for this user", countEntries))
 		log.Printf("Found %v entries for this user", countEntries)
 
 		if countEntries == 0 {
+			_ = sendMsg(bot, "no entry found")
 			collection, err := app.Dao().FindCollectionByNameOrId("userSettings")
 			if err != nil {
 				return err
 			}
 
+			_ = sendMsg(bot, fmt.Sprintf("Collection found: %s", collection.Name))
+
 			record := models.NewRecord(collection)
 			record.Set("user_id", e.Record.Id)
 			record.Set("clearDoneEntries", false)
 			record.Set("bookmarkOrDue", false)
+
+			_ = sendMsg(bot, fmt.Sprintf("Created new settings: %s", record.Id))
 		}
 
 		return nil
 	})
 
-	startPocketbase(app)
+	// start pocketbase
+	if err := app.Start(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func setupLogging() {
@@ -112,6 +98,16 @@ func initTelegram() (*tg.BotAPI, error) {
 	return bot, nil
 }
 
+func sendMsg(bot *tg.BotAPI, message string) error {
+	msg := tg.NewMessage(TELEGRAM_CHAT_ID, message)
+	_, err := bot.Send(msg)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func initPocketbase() *pocketbase.PocketBase {
 	pocketbase.Version = "v0.0.1"
 	app := pocketbase.New()
@@ -120,10 +116,4 @@ func initPocketbase() *pocketbase.PocketBase {
 	})
 
 	return app
-}
-
-func startPocketbase(app *pocketbase.PocketBase) {
-	if err := app.Start(); err != nil {
-		log.Fatal(err)
-	}
 }
