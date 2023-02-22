@@ -13,7 +13,7 @@ ENV PB_ADMIN_PASSWORD=$PB_ADMIN_PASSWORD
 COPY * ./
 RUN go mod download
 
-RUN GOOS="linux" GOARCH="amd64" go build -o /pocketbase
+RUN GOOS="linux" GOARCH="amd64" CGOENABLED=0 go build -o /pocketbase
 
 ## Deploy
 FROM alpine:latest
