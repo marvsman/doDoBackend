@@ -20,7 +20,7 @@ FROM alpine:latest
 
 RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 
-COPY --from=build /app/pocketbase /usr/local/bin/pocketbase
+COPY --from=builder /app/pocketbase /usr/local/bin/pocketbase
 
 EXPOSE 8090
 ENTRYPOINT ["/usr/local/bin/pocketbase", "serve", "--http=0.0.0.0:8090", "--dir=/pb_data", "--publicDir=/pb_public"]
