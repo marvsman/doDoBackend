@@ -84,7 +84,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: "./Dockerfile"
+          file: "./docker/Dockerfile"
           build-args: |
             PB_ADMIN_USER=${{ secrets.PB_ADMIN_USER }}
             PB_ADMIN_PASSWORD=${{ secrets.PB_ADMIN_PASSWORD }}
@@ -92,7 +92,6 @@ jobs:
           tags: ${{ env.DOCKER_REGISTRY }}/dodotodo-pb:latest, ${{ env.DOCKER_REGISTRY }}/dodotodo-pb:${{  github.ref_name }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      #          labels: ${{ steps.meta.outputs.labels }}
 
 
       # Sign the resulting Docker image digest except on PRs.
