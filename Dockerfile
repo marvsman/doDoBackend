@@ -15,6 +15,7 @@ RUN apk add build-base
 RUN go mod download
 
 RUN CGO_ENABLED=0 GOOS="linux" GOARCH="amd64" go build -o /pocketbase
+RUN "ls -la /app"
 
 ## Deploy
 FROM alpine:latest
