@@ -71,7 +71,12 @@ func main() {
 			record.Set("clearDoneEntries", false)
 			record.Set("bookmarkOrDue", false)
 
-			_ = sendMsg(bot, fmt.Sprintf("Created new settings: %s", record.Id))
+			err = app.Dao().SaveRecord(record)
+			if err != nil {
+				return err
+			}
+
+			_ = sendMsg(bot, fmt.Sprintf("Created new settings: %s", record))
 		}
 
 		return nil
