@@ -84,7 +84,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: "./docker/Dockerfile"
+          file: "./Dockerfile"
           build-args: |
             PB_ADMIN_USER=${{ secrets.PB_ADMIN_USER }}
             PB_ADMIN_PASSWORD=${{ secrets.PB_ADMIN_PASSWORD }}
