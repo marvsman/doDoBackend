@@ -20,7 +20,7 @@ func run() {
 	app := initPocketbase()
 
 	// add a handler to create new default userSettings whenever a user registers
-	pbcustom.CreateNewSettingsHandler(app)
+	pbcustom.AddNewSettingsHandler(app, log)
 
 	// start pocketbase
 	if err := app.Start(); err != nil {
