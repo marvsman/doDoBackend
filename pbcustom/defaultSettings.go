@@ -34,6 +34,7 @@ func AddNewSettingsHandler(app *pocketbase.PocketBase, log *logrus.Logger) {
 			record.Set("user_id", e.Record.Id)
 			record.Set("clearDoneEntries", false)
 			record.Set("bookmarkOrDue", false)
+			record.Set("dashboardTwo", "tomorrow")
 
 			// save to database
 			err = app.Dao().SaveRecord(record)
